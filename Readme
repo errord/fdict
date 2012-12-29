@@ -1,5 +1,0 @@
-Fast Dict
-fast index, use trie
-data store, use fixed size record array 
-fast random access
-only read, not write
