@@ -1,0 +1,12 @@
+{
+	"datafile_type" : "fldata",
+	"fields" : [
+	 	 {"type": "string", "length" : 10},
+	 	 {"type": "string", "length" : 3},
+	 	 {"type": "text"},
+	 	 {"type": "int"},
+	 	 {"type": "int"},
+	 	 {"type": "number"},
+	 	 {"type": "int"},
+	 ]
+}

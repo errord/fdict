@@ -1,0 +1,3 @@
+record_info 写入文件，search直接从文件读，而不需要从配置读取
+datrie的userdata改造
+key支持多个value
