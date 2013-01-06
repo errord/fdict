@@ -11,7 +11,8 @@
 #include <fdict/datrie.h>
 #include <fdict/datrieevent.h>
 
-struct datrie_s* create_datrie(struct wordimage_s* wordimage, struct datrieevent_s* event, int udsize, int scantype, int debug)
+struct datrie_s* create_datrie(struct wordimage_s* wordimage, struct datrieevent_s* event,
+			       int scantype, int debug)
 {
   struct datrie_s* datrie;
   int encodesize;
@@ -32,20 +33,17 @@ struct datrie_s* create_datrie(struct wordimage_s* wordimage, struct datrieevent
   datrie->lastk = 1;
   datrie->base = (int*)DATMALLOC(sizeof(int) * encodesize);
   datrie->check = (int*)DATMALLOC(sizeof(int) * encodesize);
-  datrie->udindex = (int*)DATMALLOC(sizeof(int) * encodesize);
+  datrie->dataids = (unsigned int*)DATMALLOC(sizeof(int) * encodesize);
   datrie->udcount = 0;
-  datrie->udsize = udsize;
-  datrie->userdata = (struct userdata_s*)DATMALLOC(sizeof(struct userdata_s) * udsize);
   if (datrie->base == NULL || datrie->check == NULL || 
-      datrie->udindex == NULL || datrie->userdata == NULL)
+      datrie->dataids == NULL)
     {
       DATMEMOUT;
       DATMEMOUT_EXIT(NULL);
     }
   memset(datrie->base, 0, sizeof(int) * encodesize);
   memset(datrie->check, 0, sizeof(int) * encodesize);
-  memset(datrie->udindex, 0, sizeof(int) * encodesize);
-  memset(datrie->userdata, 0, sizeof(struct userdata_s) * udsize);
+  memset(datrie->dataids, 0, sizeof(int) * encodesize);
   return datrie;
 }
 
@@ -66,18 +64,12 @@ void clear_datrie(struct datrie_s* datrie)
           datrie->check = NULL;
         }
       
-      if (datrie->udindex != NULL)
+      if (datrie->dataids != NULL)
         {
-          DATFREE(datrie->udindex);
-          datrie->udindex = NULL;
+          DATFREE(datrie->dataids);
+          datrie->dataids = NULL;
         }
 
-      if (datrie->userdata != NULL)
-        {
-          DATFREE(datrie->userdata);
-          datrie->userdata = NULL;
-        }
-      
       datrie->wordimage = NULL;
       datrie->event = NULL;
       DATFREE(datrie);
@@ -88,16 +80,19 @@ static void realloc_array(struct datrie_s* datrie)
 {
   int* newbase;
   int* newcheck;
-  int* newuserindex;
+  unsigned int* newdataids;
   int allocsize;
+  int new_alloc_size;
   
   assert(datrie != NULL);
   assert(datrie->base != NULL);
   assert(datrie->check != NULL);
-  assert(datrie->udindex != NULL);
+  assert(datrie->dataids != NULL);
+
+  new_alloc_size = (datrie->size + datrie->encodesize * 10) * 2;
 
   /* base array */
-  allocsize = sizeof(int) * (datrie->size + datrie->encodesize * 10) * 2;
+  allocsize = sizeof(int) * new_alloc_size;
   if (datrie->debug)
     printf("Realloc Array: %d\n", allocsize);
   newbase = (int*)DATMALLOC(allocsize);
@@ -123,21 +118,20 @@ static void realloc_array(struct datrie_s* datrie)
   DATFREE(datrie->check);
   datrie->check = newcheck;
 
-  /* userdata index array */
-  allocsize = sizeof(int) * (datrie->size + datrie->encodesize * 10) * 2;
-  newuserindex = (int*)DATMALLOC(allocsize);
-  if (newuserindex == NULL)
+  /* dataids array */
+  newdataids = (unsigned int*)DATMALLOC(allocsize);
+  if (newdataids == NULL)
     {
       DATMEMOUT;
       DATMEMOUT_EXIT(NULL);
     }
-  memset(newuserindex, 0, allocsize);
-  memcpy(newuserindex, datrie->udindex, sizeof(int) * datrie->size);
-  DATFREE(datrie->udindex);
-  datrie->udindex = newuserindex;
+  memset(newdataids, 0, allocsize);
+  memcpy(newdataids, datrie->dataids, sizeof(int) * datrie->size);
+  DATFREE(datrie->dataids);
+  datrie->dataids = newdataids;
 
   /* new size */
-  datrie->size = (datrie->size + datrie->encodesize * 10) * 2;
+  datrie->size = new_alloc_size;
 }
 
 static int check_empty_slot(struct datrie_s* datrie, int k, struct trie_state_s* state)
@@ -172,30 +166,7 @@ static void set_state_array(struct datrie_s* datrie, struct trie_state_s* state,
     }
 }
 
-/* 
- * realloc user data 
- * size is new node size
-*/
-static void realloc_userdata(struct datrie_s* datrie, int size)
-{
-  int allocsize;
-  struct userdata_s* newuserdata;
-
-  datrie->udsize = datrie->udcount + size;
-  allocsize  = sizeof(struct userdata_s) * (datrie->udsize);
-  newuserdata = (struct userdata_s*)DATMALLOC(allocsize);
-  if (newuserdata == NULL)
-    {
-      DATMEMOUT;
-      DATMEMOUT_EXIT(NULL);
-    }
-  memset(newuserdata, 0, allocsize);
-  memcpy(newuserdata, datrie->userdata, sizeof(struct userdata_s) * (datrie->udcount));
-  DATFREE(datrie->userdata);
-  datrie->userdata = newuserdata;
-}
-
-static void build_state(struct datrie_s* datrie, struct trie_state_s* state, struct userdata_s* userdata)
+static void build_state(struct datrie_s* datrie, struct trie_state_s* state)
 {
   struct trie_state_s* substate;
   int index;
@@ -216,7 +187,7 @@ static void build_state(struct datrie_s* datrie, struct trie_state_s* state, str
     k = 1;
   
   if (datrie->event != NULL && datrie->event->build_state_event != NULL)
-    datrie->event->build_state_event(datrie, state, userdata);
+    datrie->event->build_state_event(datrie, state);
 
   substate = state->nextstate;
   index = state->index;
@@ -241,11 +212,8 @@ static void build_state(struct datrie_s* datrie, struct trie_state_s* state, str
     {
       assert(datrie->base[index] > 0);
       datrie->base[index] *= -1;
-      datrie->udindex[index] = ++datrie->udcount;
-      assert(datrie->udcount <= datrie->udsize);
-      if (datrie->udcount > datrie->udsize)
-        realloc_userdata(datrie, 10);
-      COPY_UD__P(datrie->userdata[datrie->udcount-1], userdata);
+      datrie->dataids[index] = state->dataid;
+      ++datrie->udcount;
     }
 }
 
@@ -256,7 +224,7 @@ void build_state_list(struct datrie_s* datrie, struct trie_state_s* state_list)
 
   while (state_list != NULL)
     {
-      build_state(datrie, state_list, state_list->userdata);
+      build_state(datrie, state_list);
       state_list = state_list->sortnext;
     }
 }
@@ -267,13 +235,13 @@ int dat_find_states(struct datrie_s* datrie, struct tstate_s* tstate)
   int statecount;
   int c, i, s, t = 0;
   int m = 0;
-  int userindex;
   
   if (datrie == NULL || tstate == NULL)
     return 0;
 
   states = tstate->states;
   statecount = tstate->statecount;
+  tstate->dataid = 0;
   s = 1;
   for (i = 0; i < statecount; i++)
     {
@@ -286,12 +254,7 @@ int dat_find_states(struct datrie_s* datrie, struct tstate_s* tstate)
   if (datrie->base[t] < 0)
     {
       m = 1;
-      userindex = datrie->udindex[t]-1;
-      COPY_UD(tstate->userdata, datrie->userdata[userindex]);
-    }
-  else
-    {
-      CLEAR_UD(tstate->userdata);
+      tstate->dataid = datrie->dataids[t];
     }
   return m+1;
 }
@@ -301,29 +264,26 @@ int dat_find_state(struct datrie_s* datrie, struct stateslot_s* stateslot, int s
   int s;
   int t;
   int c;
-  int userindex;
   
   if (datrie == NULL || stateslot == NULL)
     return 0;
   
   s = stateslot->s;
+  stateslot->dataid = 0;
   getwordcode(c, datrie->wordimage, state);
 
   t = abs(datrie->base[s]) + c;
   if (datrie->check[t] != s)
     {
       stateslot->s = 1;
-      CLEAR_UD(stateslot->userdata);
       return 0;
     }
   stateslot->s = t;
   if (datrie->base[t] < 0)
     {
-      userindex = datrie->udindex[t]-1;
-      COPY_UD(stateslot->userdata, datrie->userdata[userindex]);
+      stateslot->dataid = datrie->dataids[t];
       return 2;
     }
-  CLEAR_UD(stateslot->userdata);
   return 1;
 }
 

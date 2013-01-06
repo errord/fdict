@@ -11,8 +11,7 @@ struct datrieevent_s
 {
   int build_state_event_data;
   void (*build_state_event)(struct datrie_s* datrie, 
-                            struct trie_state_s* state, 
-                            struct userdata_s* userdata);
+                            struct trie_state_s* state);
 };
 
 

@@ -1,7 +1,12 @@
 2013-1-6
 建立大数据时，构造trie tree非常消耗内存,所以需要支持基于磁盘的trie tree构造
+支持mmap的方式载入内存,方便进程间共享内存
+使用霍夫曼编码的方式压缩data文件
+重写test
+生成的索引文件过大,找一下原因
+
 
 2012-8-9
 record_info 写入文件，search直接从文件读，而不需要从配置读取
-datrie的userdata改造
+[v] datrie的userdata改造
 key支持多个value

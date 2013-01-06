@@ -14,12 +14,14 @@ static int json_string_check(const char *string)
   return 1;
 }
 
+/*
 static int json_number_check(double number)
 {
   if (number == 0.0)
     return 0;
   return 1;
 }
+*/
 
 static char* data_config_parse_(struct json *json, struct data_config_s *data_config)
 {

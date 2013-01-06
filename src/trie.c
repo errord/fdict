@@ -23,7 +23,7 @@ struct trie_s* create_trie(struct wordimage_s* wordimage)
   state->nscount = 0;
   state->index = 1;
   state->endstate = 0;
-  state->userdata = NULL;
+  state->dataid = 0;
   state->nextstate = NULL;
   state->brerstate = NULL;
   state->listnext = NULL;
@@ -49,8 +49,6 @@ static void clear_state(struct trie_state_s* state)
       clear_state(state->nextstate);
       curstate = state;
       state = state->brerstate;
-      if (curstate->userdata != NULL)
-          TRIEFREE(curstate->userdata);
       TRIEFREE(curstate);
     }
 }
@@ -106,11 +104,11 @@ static struct trie_state_s* add_sub_state(struct trie_state_s* curstate, int sta
   newstate->nscount = 0;
   newstate->index = 1;
   newstate->endstate = 0;
+  newstate->dataid = 0;
   newstate->brerstate = NULL;
   newstate->nextstate = NULL;
   newstate->listnext = NULL;
   newstate->sortnext = NULL;
-  newstate->userdata = NULL;
 
   if (curstate->nextstate != NULL)
     {
@@ -156,8 +154,7 @@ int add_states(struct trie_s* trie, struct tstate_s* tstate)
     }
   /* set end state */
   curstate->endstate = 1;
-  curstate->userdata = (struct userdata_s*)TRIEMALLOC(sizeof(struct userdata_s));
-  COPY_UD_P_(curstate->userdata, tstate->userdata);
+  curstate->dataid = tstate->dataid;
   trie->udcount++;
   return 1;
 }
@@ -184,14 +181,7 @@ int find_states(struct trie_s* trie, struct tstate_s* tstate)
       if (curstate == NULL)
         return 0;
     }
-  if (curstate->userdata == NULL)
-    {
-      CLEAR_UD(tstate->userdata);
-    }
-  else
-    {
-      COPY_UD__P(tstate->userdata, curstate->userdata);
-    }
+  tstate->dataid = curstate->dataid;
   return 1;
 }
 

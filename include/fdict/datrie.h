@@ -22,10 +22,8 @@ struct datrie_s
   int lastk; /* k start search pos */
   int* base; /* base array */
   int* check; /* check array */
-  int* udindex; /* user data index, start at 1 */
+  unsigned int* dataids; /* user data index, start at 1 */
   int udcount; /* user data use count */
-  int udsize; /* user data real alloc size */
-  struct userdata_s* userdata; /* user data */
   struct wordimage_s* wordimage;
   struct datrieevent_s* event;
 };
@@ -36,13 +34,14 @@ struct datrie_s
 struct stateslot_s
 {
   int s;
-  struct userdata_s userdata;
+  int dataid;
 };
 
 /*
  * create datrie
  */
-struct datrie_s* create_datrie(struct wordimage_s* wordimage, struct datrieevent_s* event, int udsize, int scantype, int debug);
+struct datrie_s* create_datrie(struct wordimage_s* wordimage, struct datrieevent_s* event,
+			       int scantype, int debug);
 
 /*
  * clear datrie

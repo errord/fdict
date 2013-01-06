@@ -28,20 +28,8 @@
  *  ------------------
  *       As*int    As*int      As*int
  *  -----------------------------------------
- *  |    Base     |   Check     |  Udindex  |
+ *  |    Base     |   Check     |  Dataids  |
  *  -----------------------------------------
- *         int
- *  ------------------------
- *  | Udc(user data count) |
- *  ------------------------
- *         int
- *  -----------------------
- *  | Uds(user data size) |
- *  -----------------------
- *      Udc*Uds
- *  -------------------
- *  | User data array |
- *  -------------------
 */
 
 int savedatrie_bindict(struct datrietree_s* datrietree, const char* dictname)
@@ -51,8 +39,6 @@ int savedatrie_bindict(struct datrietree_s* datrietree, const char* dictname)
   int wsize;
   int id;
   int as;
-  int udc;
-  int uds;
   int r;
   
   if (datrietree == NULL || dictname == NULL)
@@ -82,16 +68,8 @@ int savedatrie_bindict(struct datrietree_s* datrietree, const char* dictname)
   r = fwrite(datrietree->datrie->base, sizeof(int), as, fd);
   /* Check */
   r = fwrite(datrietree->datrie->check, sizeof(int), as, fd);
-  /* Udindex */
-  r = fwrite(datrietree->datrie->udindex, sizeof(int), as, fd);
-  /* Udc */
-  udc = datrietree->datrie->udcount;
-  r = fwrite(&udc, sizeof(int), 1, fd);
-  /* Uds */
-  uds = sizeof(struct userdata_s);
-  r = fwrite(&uds, sizeof(int), 1, fd);
-  /* User data array */
-  r = fwrite(datrietree->datrie->userdata, uds, udc, fd);
+  /* Dataids */
+  r = fwrite(datrietree->datrie->dataids, sizeof(int), as, fd);
   fclose(fd);
   return 1;
 }
@@ -106,7 +84,6 @@ struct datrietree_s* loaddatrie_bindict(const char* dictname)
   struct wordimage_s* wdimg = NULL;
   struct datrie_s* datrie = NULL;
   int as;
-  int uds;
   int r;
   
   if (dictname == NULL)
@@ -158,12 +135,10 @@ struct datrietree_s* loaddatrie_bindict(const char* dictname)
   datrie->encodesize = 0;
   datrie->scantype = 0;
   datrie->lastk = 0;
-  datrie->udsize = 0;
   
   datrie->base = NULL;
   datrie->check = NULL;
-  datrie->udindex = NULL;
-  datrie->userdata = NULL;
+  datrie->dataids = NULL;
 
   /* As */
   r = fread(&as, sizeof(int), 1, fd);
@@ -176,18 +151,10 @@ struct datrietree_s* loaddatrie_bindict(const char* dictname)
   datrie->check = (int*)DATMALLOC(sizeof(int) * as);
   memset(datrie->check, 0, sizeof(int) * as);
   r = fread(datrie->check, sizeof(int), as, fd);
-  /* Udindex */
-  datrie->udindex = (int*)DATMALLOC(sizeof(int) * as);
-  memset(datrie->udindex, 0, sizeof(int) * as);
-  r = fread(datrie->udindex, sizeof(int), as, fd);
-  /* Udc */
-  r = fread(&(datrie->udcount), sizeof(int), 1, fd);
-  /* Uds */
-  r = fread(&uds, sizeof(int), 1, fd);
-  /* User data array */
-  datrie->userdata = (struct userdata_s*)DATMALLOC(uds*datrie->udcount);
-  memset(datrie->userdata, 0, uds*datrie->udcount);
-  r = fread(datrie->userdata, uds, datrie->udcount, fd);
+  /* Dataids */
+  datrie->dataids = (unsigned int*)DATMALLOC(sizeof(int) * as);
+  memset(datrie->dataids, 0, sizeof(int) * as);
+  r = fread(datrie->dataids, sizeof(int), as, fd);
 
   datrietree->wordimage = wdimg;
   datrietree->trie = NULL;
@@ -223,15 +190,10 @@ struct datrietree_s* loaddatrie_bindict(const char* dictname)
           DATFREE(datrie->check);
           datrie->check = NULL;
         }
-      if (datrie->udindex != NULL)
+      if (datrie->dataids != NULL)
         {
-          DATFREE(datrie->udindex);
-          datrie->udindex = NULL;
-        }
-      if (datrie->userdata != NULL)
-        {
-          DATFREE(datrie->userdata);
-          datrie->userdata = NULL;
+          DATFREE(datrie->dataids);
+          datrie->dataids = NULL;
         }
       DATFREE(datrie);
       datrie = NULL;

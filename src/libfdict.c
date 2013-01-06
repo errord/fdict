@@ -67,7 +67,8 @@ void buildDatrie(struct datrietree_s* datrie, int scantype, int debug)
   
   assert(datrie->datrie == NULL);
 
-  datrie->datrie = create_datrie(datrie->wordimage, datrie->event, get_userdata_count(datrie->trie), scantype, debug);
+  datrie->datrie = create_datrie(datrie->wordimage, datrie->event,
+				 scantype, debug);
   if (datrie->datrie == NULL)
     {
       LDMEMOUT;
@@ -97,7 +98,7 @@ static int string_to_wordcode(const char* word, int wlength, int* words, enum wo
   return 0;
 }
 
-void addWord(struct datrietree_s* datrie, const char* word, struct userdata_s* userdata, enum word_encode encode)
+void addWord(struct datrietree_s* datrie, const char* word, unsigned int dataid, enum word_encode encode)
 {
   struct tstate_s tstate;
   int* words;
@@ -118,13 +119,12 @@ void addWord(struct datrietree_s* datrie, const char* word, struct userdata_s* u
   wcount = string_to_wordcode(word, wlen, words, encode);
   tstate.states = words;
   tstate.statecount = wcount;
-  /* copy user data */
-  COPY_UD__P(tstate.userdata, userdata);
+  tstate.dataid = dataid + 1;
   add_states(datrie->trie, &tstate);
   LDFREE(words);
 }
 
-int findWord(struct datrietree_s* datrie, const char* word, struct userdata_s* userdata, enum word_encode encode)
+int findWord(struct datrietree_s* datrie, const char* word, unsigned int *dataid, enum word_encode encode)
 {
   struct tstate_s tstate;
   int* words;
@@ -143,13 +143,16 @@ int findWord(struct datrietree_s* datrie, const char* word, struct userdata_s* u
       LDMEMOUT_EXIT(NULL);
     }
 
-  wcount = string_to_wordcode(word, wlen, words, encode);  
+  wcount = string_to_wordcode(word, wlen, words, encode);
   tstate.states = words;
   tstate.statecount = wcount;
-  CLEAR_UD(tstate.userdata);
+  tstate.dataid = 0;
   r = dat_find_states(datrie->datrie, &tstate);
   LDFREE(words);
-  COPY_UD_P_(userdata, tstate.userdata);
+  if (tstate.dataid > 0)
+    *dataid = tstate.dataid - 1;
+  else
+    *dataid = tstate.dataid;
   return r;
 }
 

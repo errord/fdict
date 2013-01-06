@@ -15,12 +15,12 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   struct record_s *record;
   struct fdict_s *fdict = index->fdict;
   struct datrietree_s* datrie;
-  struct userdata_s userdata;
   enum word_encode encode = utf8_short;
   uint32 record_id;
   int r;
   time_info tinfo;
   int time;
+  unsigned int dataid;
 
   if (fdict->debug)
     timestart(&tinfo);
@@ -40,7 +40,7 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   if (fdict->debug)
     restart_timeinfo(&tinfo);
 
-  r = findWord(datrie, keyword, &userdata, encode);
+  r = findWord(datrie, keyword, &dataid, encode);
 
   if (fdict->debug) {
     time = timeend(&tinfo);
@@ -51,7 +51,7 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
     return NULL;
   }
   search_result = search_result_malloc(fdict);
-  record_id = userdata.POS;
+  record_id = dataid;
   record = record_read(fdict, record_id);
   record_node = record_node_malloc(record);
   search_result_add_node(search_result, record_node);

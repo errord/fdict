@@ -32,7 +32,7 @@ void clearDatrieTree(struct datrietree_s* datrie);
 
 void buildDatrie(struct datrietree_s* datrie, int scantype, int debug);
 
-void addWord(struct datrietree_s* datrie, const char* word, struct userdata_s* userdata, enum word_encode ecode);
+void addWord(struct datrietree_s* datrie, const char* word, unsigned int dataid, enum word_encode ecode);
 
 /*
  * find Word
@@ -40,7 +40,7 @@ void addWord(struct datrietree_s* datrie, const char* word, struct userdata_s* u
  * 1 match
  * 2 match and stop state
  */
-int findWord(struct datrietree_s* datrie, const char* word, struct userdata_s* userdata, enum word_encode ecode);
+int findWord(struct datrietree_s* datrie, const char* word, unsigned int *dataid, enum word_encode ecode);
 
 void dump_datrie(struct datrietree_s* datrie, const char *datafile);
 

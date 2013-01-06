@@ -13,7 +13,6 @@ bool dat_build_start(struct index_s *index)
   struct fdict_s *fdict = index->fdict;
   struct build_s *build = &index->build;
   struct datrietree_s* datrie;
-  struct userdata_s userdata;
   enum word_encode encode = utf8_short;
   struct record_s *record;
   data_parse_fn data_parse;
@@ -41,8 +40,7 @@ bool dat_build_start(struct index_s *index)
       continue;
     }
 
-    userdata.POS = record->record_id;
-    addWord(datrie, record_key(record), &userdata, encode);
+    addWord(datrie, record_key(record), record->record_id, encode);
     record_write(fdict, record);
     record_init(fdict, record);
   }

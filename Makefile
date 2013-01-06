@@ -6,7 +6,7 @@ INCLUDEPATH = -I./include
 all: libfdict test
 
 fdict_test:
-	$(CC) -o test_datrie $(FLAG) $(INCLUDEPATH) ./src/test_datrie.c -L. -lfdict
+	#$(CC) -o test_datrie $(FLAG) $(INCLUDEPATH) ./src/test_datrie.c -L. -lfdict
 	$(CC) -o test_fdict $(FLAG) $(INCLUDEPATH) ./src/test_fdict.c -L. -lfdict
 
 test_utf:
