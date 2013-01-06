@@ -94,7 +94,7 @@ static void realloc_array(struct datrie_s* datrie)
   /* base array */
   allocsize = sizeof(int) * new_alloc_size;
   if (datrie->debug)
-    printf("Realloc Array: %d\n", allocsize);
+    printf("Realloc Array: %dbyte\n", allocsize);
   newbase = (int*)DATMALLOC(allocsize);
   if (newbase == NULL)
     {
@@ -217,6 +217,20 @@ static void build_state(struct datrie_s* datrie, struct trie_state_s* state)
     }
 }
 
+static void truncate(struct datrie_s *datrie)
+{
+  int i = datrie->size - 1;
+  for (; i >= 0; i--) {
+    if (datrie->base[i] != 0)
+      break;
+  }
+  if (datrie->debug) {
+    printf("Alloc Array Size: %lubyte\n", datrie->size * sizeof(int));
+    printf("Real Array Size: %lubyte\n", (i + 1) * sizeof(int));
+  }
+  datrie->size = i + 1;
+}
+
 void build_state_list(struct datrie_s* datrie, struct trie_state_s* state_list)
 { 
   if (state_list == NULL)
@@ -227,6 +241,7 @@ void build_state_list(struct datrie_s* datrie, struct trie_state_s* state_list)
       build_state(datrie, state_list);
       state_list = state_list->sortnext;
     }
+  truncate(datrie);
 }
 
 int dat_find_states(struct datrie_s* datrie, struct tstate_s* tstate)

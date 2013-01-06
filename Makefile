@@ -17,11 +17,12 @@ test: clean_o clean_a clean_test libfdict fdict_test
 tools: del_tools
 	$(CC) -o fdbuild $(FLAG) $(INCLUDEPATH) ./src/fdbuild.c -L. -lfdict
 	$(CC) -o fdsearch $(FLAG) $(INCLUDEPATH) ./src/fdsearch.c -L. -lfdict
+	$(CC) -o fddump $(FLAG) $(INCLUDEPATH) ./src/fddump.c -L. -lfdict
 
 del_tools:
 	rm -rf fdbuild
 	rm -rf fdsearch
-
+	rm -rf fddump
 
 libfdict: clean_o clean_a
 	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/util.c
@@ -62,6 +63,7 @@ clean_test:
 clean_tools:
 	rm -rf fdbuild
 	rm -rf fdsearch
+	rm -rf fddump
 
 clean_data:
 	rm -rf *.dump
