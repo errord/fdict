@@ -1,3 +1,7 @@
+2013-1-6
+建立大数据时，构造trie tree非常消耗内存,所以需要支持基于磁盘的trie tree构造
+
+2012-8-9
 record_info 写入文件，search直接从文件读，而不需要从配置读取
 datrie的userdata改造
 key支持多个value
