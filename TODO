@@ -5,6 +5,7 @@
 重写test
 [v]生成的索引文件过大,找一下原因,realloc内存后，很多都没有使用，加入了截断功能
 base与check使用临近内存,可以很好的利用cache
+支持载入部分index到内存，通过mmap还是memory cache?
 
 2012-8-9
 record_info 写入文件，search直接从文件读，而不需要从配置读取
