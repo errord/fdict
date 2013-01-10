@@ -29,7 +29,7 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
 
   if (fdict->debug) {
     time = timeend(&tinfo);
-    printf("Load Datrie Bindict Time: %d\n", time);
+    printf("Load Datrie Bindict Time: %d msec\n", time);
   }
 
   if (!datrie) {
@@ -43,8 +43,8 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   r = findWord(datrie, keyword, &dataid, encode);
 
   if (fdict->debug) {
-    time = timeend(&tinfo);
-    printf("Search Time: %d\n", time);
+    time = timeend_usec(&tinfo);
+    printf("Search Time: %d usec\n", time);
   }
 
   if (r != 2) {

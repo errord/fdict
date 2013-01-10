@@ -19,8 +19,11 @@ int getcurmillisec();
 /* time start */
 void timestart(time_info* ti);
 
-/* time end, return interval time */
+/* time end, return interval time msec */
 int timeend(time_info* ti);
+
+/* time end, return interval time usec */
+int timeend_usec(time_info* ti);
 
 /* restart time struct */
 void restart_timeinfo(time_info* ti);

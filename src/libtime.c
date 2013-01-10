@@ -29,6 +29,13 @@ int timeend(time_info* ti)
   return ti->interval_time;
 }
 
+int timeend_usec(time_info* ti)
+{
+  gettimeofday(&ti->clockend, NULL);
+  ti->interval_time = 1000000*(ti->clockend.tv_sec - ti->clockstart.tv_sec) + (ti->clockend.tv_usec - ti->clockstart.tv_usec);
+  return ti->interval_time;
+}
+
 void restart_timeinfo(time_info* ti)
 {
   reset_timeinfo(ti);
