@@ -13,6 +13,13 @@
 #define DATMALLOC CLIBMALLOC
 #define DATFREE CLIBFREE
 
+struct array_s 
+{  
+  int base;
+  int check;
+  unsigned int dataids;  /* user data index, start at 1 */
+};
+
 struct datrie_s
 {
   int debug;
@@ -20,10 +27,8 @@ struct datrie_s
   int encodesize; /* state encode size */
   int scantype; /* scan memory type, 1 full scan, 2 increment scan */
   int lastk; /* k start search pos */
-  int* base; /* base array */
-  int* check; /* check array */
-  unsigned int* dataids; /* user data index, start at 1 */
   int udcount; /* user data use count */
+  struct array_s *array; /* base and check array */
   struct wordimage_s* wordimage;
   struct datrieevent_s* event;
 };

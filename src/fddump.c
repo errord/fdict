@@ -28,7 +28,7 @@ int array_zero_count(struct datrie_s *datrie)
   int i;
   size_t zero_count = 0;
   for (i = 0; i < datrie->size; i++) {
-    if (!datrie->base[i] && !datrie->check[i])
+    if (!datrie->array[i].base && !datrie->array[i].check)
       zero_count++;
   }
   return zero_count;

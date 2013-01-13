@@ -64,12 +64,8 @@ int savedatrie_bindict(struct datrietree_s* datrietree, const char* dictname)
   /* As */
   as = datrietree->datrie->size;
   r = fwrite(&as, sizeof(int), 1, fd);
-  /* Base */
-  r = fwrite(datrietree->datrie->base, sizeof(int), as, fd);
-  /* Check */
-  r = fwrite(datrietree->datrie->check, sizeof(int), as, fd);
-  /* Dataids */
-  r = fwrite(datrietree->datrie->dataids, sizeof(int), as, fd);
+  /* Array */
+  r = fwrite(datrietree->datrie->array, sizeof(struct array_s), as, fd);
   fclose(fd);
   return 1;
 }
@@ -136,25 +132,16 @@ struct datrietree_s* loaddatrie_bindict(const char* dictname)
   datrie->scantype = 0;
   datrie->lastk = 0;
   
-  datrie->base = NULL;
-  datrie->check = NULL;
-  datrie->dataids = NULL;
+  datrie->array = NULL;
 
   /* As */
   r = fread(&as, sizeof(int), 1, fd);
   datrie->size = as;
-  /* Base */
-  datrie->base = (int*)DATMALLOC(sizeof(int) * as);
-  memset(datrie->base, 0, sizeof(int) * as);
-  r = fread(datrie->base, sizeof(int), as, fd);
-  /* Check */
-  datrie->check = (int*)DATMALLOC(sizeof(int) * as);
-  memset(datrie->check, 0, sizeof(int) * as);
-  r = fread(datrie->check, sizeof(int), as, fd);
-  /* Dataids */
-  datrie->dataids = (unsigned int*)DATMALLOC(sizeof(int) * as);
-  memset(datrie->dataids, 0, sizeof(int) * as);
-  r = fread(datrie->dataids, sizeof(int), as, fd);
+
+  /* Array */
+  datrie->array = (struct array_s*)DATMALLOC(sizeof(struct array_s) * as);
+  memset(datrie->array, 0, sizeof(struct array_s) * as);
+  r = fread(datrie->array, sizeof(struct array_s), as, fd);
 
   datrietree->wordimage = wdimg;
   datrietree->trie = NULL;
@@ -180,20 +167,10 @@ struct datrietree_s* loaddatrie_bindict(const char* dictname)
     }
   if (datrie != NULL)
     {
-      if (datrie->base != NULL)
+      if (datrie->array != NULL)
         {
-          DATFREE(datrie->base);
-          datrie->base = NULL;
-        }
-      if (datrie->check != NULL)
-        {
-          DATFREE(datrie->check);
-          datrie->check = NULL;
-        }
-      if (datrie->dataids != NULL)
-        {
-          DATFREE(datrie->dataids);
-          datrie->dataids = NULL;
+          DATFREE(datrie->array);
+          datrie->array = NULL;
         }
       DATFREE(datrie);
       datrie = NULL;
