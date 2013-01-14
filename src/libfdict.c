@@ -124,31 +124,27 @@ void addWord(struct datrietree_s* datrie, const char* word, unsigned int dataid,
   LDFREE(words);
 }
 
-int findWord(struct datrietree_s* datrie, const char* word, unsigned int *dataid, enum word_encode encode)
+int findWord(struct datrietree_s* datrie, const char* word, unsigned int *dataid, enum word_encode encode, int debug)
 {
   struct tstate_s tstate;
-  int* words;
   int wlen;
   int wcount;
   int r;
+  int words[1024];
   
   assert(datrie != NULL);
   assert(word != NULL);
-  
-  wlen = string_len(word, encode);
-  words = (int*)LDMALLOC(sizeof(int) * wlen);
-  if (words == NULL)
-    {
-      LDMEMOUT;
-      LDMEMOUT_EXIT(NULL);
-    }
 
+  wlen = string_len(word, encode);
+  assert(wlen < 1024);
   wcount = string_to_wordcode(word, wlen, words, encode);
+
   tstate.states = words;
   tstate.statecount = wcount;
   tstate.dataid = 0;
+
   r = dat_find_states(datrie->datrie, &tstate);
-  LDFREE(words);
+
   if (tstate.dataid > 0)
     *dataid = tstate.dataid - 1;
   else

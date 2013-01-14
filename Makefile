@@ -1,6 +1,6 @@
 CC = gcc
-FLAG = -g -Wall
-#FLAG = -Wall
+#FLAG = -g -Wall
+FLAG = -Wall -O3
 INCLUDEPATH = -I./include
 
 all: libfdict test

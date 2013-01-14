@@ -17,21 +17,28 @@
 #include <fdict/index.h>
 #include <fdict/libtime.h>
 
+struct stat_info {
+  size_t zero_count;
+  size_t term_count;
+};
+
 void usage()
 {
   printf("Usage: ./fddump configfile indexfile\n");
 }
 
 
-int array_zero_count(struct datrie_s *datrie)
+void stat_count(struct datrie_s *datrie, struct stat_info *sinfo)
 {
   int i;
-  size_t zero_count = 0;
+  sinfo->zero_count = 0;
+  sinfo->term_count = 0;
   for (i = 0; i < datrie->size; i++) {
     if (!datrie->array[i].base && !datrie->array[i].check)
-      zero_count++;
+      sinfo->zero_count++;
+    if (datrie->array[i].base < 0)
+      sinfo->term_count++;
   }
-  return zero_count;
 }
 
 void dat_dump(struct index_s *index)
@@ -39,7 +46,7 @@ void dat_dump(struct index_s *index)
   time_info tinfo;
   int time;
   struct datrietree_s* datrie;
-  size_t zero_count = 0;
+  struct stat_info sinfo;
 
   timestart(&tinfo);
   datrie = loaddatrie_bindict(index->datrie_index_file_name);
@@ -53,11 +60,13 @@ void dat_dump(struct index_s *index)
   printf("Wordimage Size: %lubyte\n", datrie->wordimage->size * sizeof(int));
   printf("Array Size: %lubyte\n", datrie->datrie->size * sizeof(int) * 3);
 
-  zero_count = array_zero_count(datrie->datrie);
+  stat_count(datrie->datrie, &sinfo);
   printf("Array Total Count: %lu Zero Count: %lu Ratio: %.3f%%\n",
 	 datrie->datrie->size,
-	 zero_count,
-	 ((double)zero_count / (double)datrie->datrie->size)*100);
+	 sinfo.zero_count,
+	 ((double)sinfo.zero_count / (double)datrie->datrie->size)*100);
+  printf("Term Total Count: %lu\n",
+	 sinfo.term_count);
 }
 
 void dump(const char *configfile, const char *name)

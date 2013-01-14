@@ -40,7 +40,7 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   if (fdict->debug)
     restart_timeinfo(&tinfo);
 
-  r = findWord(datrie, keyword, &dataid, encode);
+  r = findWord(datrie, keyword, &dataid, encode, fdict->debug);
 
   if (fdict->debug) {
     time = timeend_usec(&tinfo);
@@ -50,11 +50,21 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   if (r != 2) {
     return NULL;
   }
+
+  if (fdict->debug)
+    restart_timeinfo(&tinfo);
+
   search_result = search_result_malloc(fdict);
   record_id = dataid;
   record = record_read(fdict, record_id);
   record_node = record_node_malloc(record);
   search_result_add_node(search_result, record_node);
+
+  if (fdict->debug) {
+    time = timeend_usec(&tinfo);
+    printf("Create Search Result Time: %d usec\n", time);
+  }
+
   return search_result;
 }
 
