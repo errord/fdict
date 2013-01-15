@@ -5,6 +5,33 @@
 #include <fdict/wordbase.h>
 #include <fdict/utf.h>
 
+const char* word_encode_to_string(enum word_encode word_encode)
+{
+  switch (word_encode) {
+  case gbk:
+    return "gbk";
+  case utf8:
+    return "utf8";
+  case utf8_short:
+    return "utf8_short";
+  default:
+    assert(0);
+  }
+  return NULL;
+}
+
+enum word_encode string_to_word_encode(const char *word_encode_str)
+{
+  if (!strcmp(word_encode_str, "gbk"))
+    return gbk;
+  else if (!strcmp(word_encode_str, "utf8"))
+    return utf8;
+  else if (!strcmp(word_encode_str, "utf8_short"))
+    return utf8_short;
+  assert(0);
+  return 0;
+}
+
 size_t get_encode_size(enum word_encode encode)
 {
   switch (encode) {

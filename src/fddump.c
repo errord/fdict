@@ -61,7 +61,7 @@ void dat_dump(struct index_s *index)
   printf("Array Size: %lubyte\n", datrie->datrie->size * sizeof(int) * 3);
 
   stat_count(datrie->datrie, &sinfo);
-  printf("Array Total Count: %lu Zero Count: %lu Ratio: %.3f%%\n",
+  printf("Array Total Count: %d Zero Count: %lu Ratio: %.3f%%\n",
 	 datrie->datrie->size,
 	 sinfo.zero_count,
 	 ((double)sinfo.zero_count / (double)datrie->datrie->size)*100);

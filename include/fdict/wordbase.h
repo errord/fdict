@@ -11,7 +11,7 @@
 enum word_encode {
   gbk = 65539,
   utf8 = 16777215,
-  utf8_short = 65535,
+  utf8_short = 65535, /* utf16 */
 };
 
 
@@ -43,6 +43,11 @@ struct words_s
   struct word_s* hugenode; /* huge node link */
   struct word_s* curnode; /* current node */
 };
+
+const char* word_encode_to_string(enum word_encode word_encode);
+
+enum word_encode string_to_word_encode(const char *word_encode_str);
+
 
 size_t get_encode_size(enum word_encode encode);
 

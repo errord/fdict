@@ -32,7 +32,7 @@ int string_to_type(const char **type_table, const char *type_string)
 
 size_t gbk_strlen(const char *str)
 {
-  size_t l;
+  size_t l = 0;
   while (*str) {
     if ((unsigned char)*str > 0x80)
       str++;

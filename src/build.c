@@ -13,7 +13,7 @@ bool dat_build_start(struct index_s *index)
   struct fdict_s *fdict = index->fdict;
   struct build_s *build = &index->build;
   struct datrietree_s* datrie;
-  enum word_encode encode = utf8_short;
+  enum word_encode encode = fdict->config->encode;
   struct record_s *record;
   data_parse_fn data_parse;
   FILE *fd;

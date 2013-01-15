@@ -15,7 +15,7 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   struct record_s *record;
   struct fdict_s *fdict = index->fdict;
   struct datrietree_s* datrie;
-  enum word_encode encode = utf8_short;
+  enum word_encode encode = fdict->config->encode;
   uint32 record_id;
   int r;
   time_info tinfo;

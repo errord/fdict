@@ -52,6 +52,7 @@ enum datafile_type {
 };
 
 struct data_config_s {
+  enum word_encode encode;
   enum datafile_type datafile_type;
   int field_number;
   enum field_type *field_type;

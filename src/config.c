@@ -30,6 +30,8 @@ static char* data_config_parse_(struct json *json, struct data_config_s *data_co
   const char *type_path = "fields[#].type";
   const char *length_path = "fields[#].length";
   const char *datafile_type;
+  const char *default_word_encode = "utf8_short";
+  const char *word_encode;
   char error_buf[1024];
   int field_number, i = 0;
 
@@ -40,8 +42,15 @@ static char* data_config_parse_(struct json *json, struct data_config_s *data_co
   if (!json_string_check(datafile_type)) {
     return "Not Define datafile_type!!!";
   }
+
+  word_encode = json_string(json, "encode");
+  if (!json_string_check(word_encode)) {
+    word_encode = default_word_encode;
+  }
   
   data_config->datafile_type = string_to_datafile_type(datafile_type);
+  data_config->encode = string_to_word_encode(word_encode);
+
   fdmalloc(data_config->field_type, enum field_type*, sizeof(enum field_type) * field_number);
   fdmalloc(data_config->field_length, uint32*, sizeof(uint32) * field_number);
 
@@ -99,6 +108,7 @@ void dump_data_config(struct data_config_s *data_config)
 {
   int i;
   printf("Data Config:\n");
+  printf("\tEncode: %s\n", word_encode_to_string(data_config->encode));
   printf("\tData File Type: %s\n", datafile_type_to_string(data_config->datafile_type));
   printf("\tField Number: %d\n", data_config->field_number);
   for (i = 0; i < data_config->field_number; i++) {
