@@ -28,6 +28,8 @@ static bool record_file_open(struct fdict_s *fdict)
   struct record_file_s *record_file = &fdict->record_file;
   sprintf(record_file->file_name, "%s.record", fdict->name);
   record_file->fd = fopen(record_file->file_name, fdict->file_mod);
+  if (!record_file->fd)
+    return false;
   record_file->data_base = strlen(RECORD_MAGIC);
   record_file->data_base += sizeof(record_file->version);
   return record_head_init(record_file->fd, RECORD_MAGIC, &record_file->version, fdict->file_mod);
@@ -72,6 +74,7 @@ struct fdict_s* fdict_open(const char *name, const char* configfile, const char 
   }
   fdict->index = index_malloc(fdict);
   index_setup(fdict->index);
+  fdict->index->index_data_init(fdict->index);
   record_info_malloc(fdict);
   return fdict;
 }
@@ -106,6 +109,7 @@ enum field_type fdict_field_type(struct fdict_s *fdict, int idx)
 
 void fdict_close(struct fdict_s *fdict)
 {
+  fdict->index->index_data_clear(fdict->index);
   record_info_free(fdict);
   fdfree(fdict);
 }

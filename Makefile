@@ -12,7 +12,7 @@ fdict_test:
 test_utf:
 	$(CC) -o test_utf $(FLAG) $(INCLUDEPATH) ./src/test_utf8_utf16.c -L. -lfdict
 
-test: clean_o clean_a clean_test libfdict fdict_test
+test: clean_o clean_a clean_test libfdict fdict_test test_utf
 
 tools: del_tools
 	$(CC) -o fdbuild $(FLAG) $(INCLUDEPATH) ./src/fdbuild.c -L. -lfdict
@@ -41,8 +41,9 @@ libfdict: clean_o clean_a
 	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/record.c
 	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/config.c
 	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/json.c
-	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/build.c
-	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/search.c
+	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/dat_index.c
+	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/dat_build.c
+	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/dat_search.c
 	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/fdict.c
 	$(CC) -c $(INCLUDEPATH) $(FLAG) ./src/index.c
 	ar csr libfdict.a *.o

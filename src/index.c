@@ -13,6 +13,7 @@ struct index_s* index_malloc(struct fdict_s *fdict)
   fdmalloc0(index, struct index_s*, sizeof(struct fdict_s));
   index->index_type = Datrie;
   index->fdict = fdict;
+  index->index_data = NULL;
   sprintf(index->datrie_index_file_name, "%s.datindex", fdict->name);
   return index;
 }
@@ -25,6 +26,9 @@ void index_free(struct index_s *index)
 void index_setup(struct index_s *index)
 {
   if (index->index_type == Datrie) {
+    index->index_data_init = dat_index_data_init;
+    index->index_data_clear = dat_index_data_clear;
+
     index->build.build_init = dat_build_init;
     index->build.build_start = dat_build_start;
     index->build.build_end = dat_build_end;

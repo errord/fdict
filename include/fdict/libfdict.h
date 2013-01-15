@@ -14,9 +14,6 @@
 
 #define LDMEMOUT CLIBMEMOUT
 #define LDMEMOUT_EXIT(ret) CLIBMEMOUT
-/* define memory allocate */
-#define LDMALLOC CLIBMALLOC
-#define LDFREE CLIBFREE
 
 struct datrietree_s
 {
@@ -41,6 +38,18 @@ void addWord(struct datrietree_s* datrie, const char* word, unsigned int dataid,
  * 2 match and stop state
  */
 int findWord(struct datrietree_s* datrie, const char* word, unsigned int *dataid, enum word_encode ecode, int debug);
+
+/*
+ * find Word by string
+ * 0 no match
+ * 1 match
+ * 2 match and stop state
+ */
+int findWordByString(struct datrietree_s* datrie,
+		     const char* word,
+		     unsigned int *dataid, 
+		     enum word_encode ecode, 
+		     int debug);
 
 void dump_datrie(struct datrietree_s* datrie, const char *datafile);
 

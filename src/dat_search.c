@@ -22,15 +22,7 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   int time;
   unsigned int dataid;
 
-  if (fdict->debug)
-    timestart(&tinfo);
-
-  datrie = loaddatrie_bindict(index->datrie_index_file_name);
-
-  if (fdict->debug) {
-    time = timeend(&tinfo);
-    printf("Load Datrie Bindict Time: %d msec\n", time);
-  }
+  datrie = (struct datrietree_s*)index->index_data;
 
   if (!datrie) {
     printf("Load Index Failed: %s\n", index->datrie_index_file_name);
@@ -38,9 +30,9 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   }
 
   if (fdict->debug)
-    restart_timeinfo(&tinfo);
+    timestart(&tinfo);
 
-  r = findWord(datrie, keyword, &dataid, encode, fdict->debug);
+  r = findWordByString(datrie, keyword, &dataid, encode, fdict->debug);
 
   if (fdict->debug) {
     time = timeend_usec(&tinfo);

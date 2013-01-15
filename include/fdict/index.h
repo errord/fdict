@@ -25,6 +25,9 @@ void search_result_add_node(struct search_result_s *search_result, struct record
 uint32 search_result_record_count(struct search_result_s *search_result);
 struct record_s* search_result_get_record(struct search_result_s *search_result);
 
+typedef bool (*index_data_init_fn)(struct index_s *index);
+typedef bool (*index_data_clear_fn)(struct index_s *index);
+
 typedef bool (*build_init_fn)(struct index_s *index);
 typedef bool (*build_start_fn)(struct index_s *index);
 typedef bool (*build_end_fn)(struct index_s *index);
@@ -51,12 +54,19 @@ struct index_s {
   struct build_s build;
   struct search_s search;
   struct fdict_s *fdict;
+  index_data_init_fn index_data_init;
+  index_data_clear_fn index_data_clear;
+  void *index_data;
   char datrie_index_file_name[MAX_PATH];
 };
 
 struct index_s* index_malloc(struct fdict_s *fdict);
 void index_free(struct index_s *index);
 void index_setup(struct index_s *index);
+
+// -- index
+bool dat_index_data_init(struct index_s *index);
+bool dat_index_data_clear(struct index_s *index);
 
 // -- build and search
 

@@ -254,7 +254,7 @@ int wordcodebyutf8(const char* word, int wlength, int* words)
 {
   int i;
   for (i = 0; i < wlength; i++)
-    words[i] = utf8char(word, i);
+    words[i] = utf8char_at(word, i);
   return wlength;
 }
 
@@ -263,10 +263,9 @@ int wordcodebyutf8short(const char* word, int wlength, int* words)
   int i, u8;
   unsigned short u16;
   for (i = 0; i < wlength; i++) {
-    u8 = utf8char(word, i);
+    u8 = utf8char_at(word, i);
     u16 = utf8_to_utf16(u8);
     words[i] = u16;
   }
   return wlength;
 }
-

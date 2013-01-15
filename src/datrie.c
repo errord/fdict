@@ -3,13 +3,16 @@
 #include <string.h>
 #include <memory.h>
 #include <assert.h>
+#include <fdict/config.h>
 #include <fdict/clib.h>
 #include <fdict/libtime.h>
 #include <fdict/libdsout.h>
 #include <fdict/wordimage.h>
 #include <fdict/trie.h>
+#include <fdict/wordbase.h>
 #include <fdict/datrie.h>
 #include <fdict/datrieevent.h>
+#include <fdict/utf.h>
 
 struct datrie_s* create_datrie(struct wordimage_s* wordimage, struct datrieevent_s* event,
 			       int scantype, int debug)
@@ -255,6 +258,51 @@ int dat_find_state(struct datrie_s* datrie, struct stateslot_s* stateslot, int s
       return 2;
     }
   return 1;
+}
+
+#define ABS(a) ((a) < 0 ? -1 * a : a)
+
+int dat_find_string(struct datrie_s *datrie, enum word_encode encode, const char *string, unsigned int *dataid)
+{
+  int c, s, t = 0;
+  int m = 0;
+  int word;
+  const char *p = string;
+  struct wordimage_s *wordimage = datrie->wordimage;
+  struct array_s *array = datrie->array;
+
+  if (datrie == NULL)
+    return 0;
+
+  *dataid = 0;
+  s = 1;
+
+  for(;;) {
+    if (encode == utf8_short) {
+      p = utf8char(p, &word);
+      if (!p)
+	break;
+      word = utf8_to_utf16(word);
+    } else if (encode == utf8) {
+      p = utf8char(p, &word);
+      if (!p)
+	break;
+    }
+
+    getwordcode(c, wordimage, word);
+    t = ABS(array[s].base) + c;
+
+    if (array[t].check != s)
+      return 0;
+    s = t;
+  }
+
+  if (array[t].base < 0) {
+    m = 1;
+    *dataid = array[t].dataids;
+  }
+
+  return m+1;
 }
 
 int datrie_out_text(struct datrie_s* datrie, const char* out_file_name)

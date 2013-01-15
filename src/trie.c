@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <memory.h>
 #include <string.h>
+#include <fdict/config.h>
 #include <fdict/clib.h>
 #include <fdict/libdsout.h>
 #include <fdict/wordimage.h>

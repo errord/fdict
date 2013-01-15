@@ -1,5 +1,5 @@
-#ifndef _FDICT_CONFIG_H_
-#define _FDICT_CONFIG_H_
+#ifndef _FDICT_H_
+#define _FDICT_H_
 
 #include <fdict/base_type.h>
 
@@ -137,4 +137,4 @@ enum field_type fdict_field_type(struct fdict_s *fdict, int idx);
 uint32 fdict_field_number(struct fdict_s *fdict);
 void fdict_close(struct fdict_s *fdict);
 
-#endif /* _FDICT_CONFIG_H_ */
+#endif /* _FDICT_H_ */

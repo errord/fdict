@@ -74,6 +74,15 @@ int dat_find_states(struct datrie_s* datrie, struct tstate_s* tstate);
  */
 int dat_find_state(struct datrie_s* datrie, struct stateslot_s* stateslot, int state);
 
+
+/*
+ * find string from datrie
+ * 0 no match
+ * 1 match
+ * 2 match and stop state
+ */
+int dat_find_string(struct datrie_s *datrie, enum word_encode encode, const char *string, unsigned int *dataid);
+
 /*
  * out datrie to file or terminal, content is text
  * print to stdout if out_file_name is null

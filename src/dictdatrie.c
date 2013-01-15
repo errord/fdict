@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <fdict/base_type.h>
+#include <fdict/memory.h>
 #include <fdict/wordbase.h>
 #include <fdict/util.h>
 #include <fdict/libfdict.h>
@@ -102,7 +103,7 @@ struct datrietree_s* loaddatrie_bindict(const char* dictname)
   if (version != DATRIE_VERSION_1_0)
     goto failed;
   
-  datrietree = (struct datrietree_s*)LDMALLOC(sizeof(struct datrietree_s));
+  fdmalloc(datrietree, struct datrietree_s*, sizeof(struct datrietree_s));
   if (datrietree == NULL)
     {
       LDMEMOUT;
@@ -152,7 +153,7 @@ struct datrietree_s* loaddatrie_bindict(const char* dictname)
  failed:
   if (datrietree != NULL)
     {
-      LDFREE(datrietree);
+      fdfree(datrietree);
       datrietree = NULL;
     }
   if (wdimg != NULL)

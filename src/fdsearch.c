@@ -16,6 +16,7 @@
 #include <fdict/fdict.h>
 #include <fdict/libfdict.h>
 #include <fdict/index.h>
+#include <fdict/libtime.h>
 
 void usage()
 {
@@ -35,6 +36,8 @@ void search(const char *configfile, const char *name, const char *keyword, int d
   const char *_s;
   int _int;
   double _number;
+  time_info tinfo;
+  int time;
 
   fdict = fdict_open(name, configfile, "rb", debug);
   if (fdict->error) {
@@ -42,7 +45,10 @@ void search(const char *configfile, const char *name, const char *keyword, int d
     exit(0);
   }
 
+  timestart(&tinfo);
   search_result = fdict_search(fdict, keyword);
+  time = timeend_usec(&tinfo);
+
   if (!search_result) {
     printf("Not found: %s\n", keyword);
     return;
@@ -75,8 +81,10 @@ void search(const char *configfile, const char *name, const char *keyword, int d
     }
   }
   printf("\n");
+  printf("Use Time: %d usec\n", time);
 
   search_result_free(search_result);
+  fdict_close(fdict);
 }
 
 int main(int argv, char** argc)

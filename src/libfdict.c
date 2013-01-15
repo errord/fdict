@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <fdict/base_type.h>
+#include <fdict/memory.h>
 #include <fdict/libtime.h>
 #include <fdict/wordbase.h>
 #include <fdict/libfdict.h>
@@ -12,7 +13,7 @@ struct datrietree_s* makeDatrieTree(int encodesize, struct datrieevent_s* event)
 {
   struct datrietree_s* datrie;
   
-  datrie = (struct datrietree_s*)LDMALLOC(sizeof(struct datrietree_s));
+  fdmalloc(datrie, struct datrietree_s*, sizeof(struct datrietree_s));
   if (datrie == NULL)
     {
       LDMEMOUT;
@@ -56,7 +57,7 @@ void clearDatrieTree(struct datrietree_s* datrie)
           datrie->wordimage = NULL;
         }
       datrie->event = NULL;
-      LDFREE(datrie);
+      fdfree(datrie);
       datrie = NULL;
     }  
 }
@@ -109,7 +110,7 @@ void addWord(struct datrietree_s* datrie, const char* word, unsigned int dataid,
   assert(word != NULL);
   
   wlen = string_len(word, encode);
-  words = (int*)LDMALLOC(sizeof(int) * wlen);
+  fdmalloc(words, int*, sizeof(int) * wlen);
   if (words == NULL)
     {
       LDMEMOUT;
@@ -121,7 +122,7 @@ void addWord(struct datrietree_s* datrie, const char* word, unsigned int dataid,
   tstate.statecount = wcount;
   tstate.dataid = dataid + 1;
   add_states(datrie->trie, &tstate);
-  LDFREE(words);
+  fdfree(words);
 }
 
 int findWord(struct datrietree_s* datrie, const char* word, unsigned int *dataid, enum word_encode encode, int debug)
@@ -149,6 +150,24 @@ int findWord(struct datrietree_s* datrie, const char* word, unsigned int *dataid
     *dataid = tstate.dataid - 1;
   else
     *dataid = tstate.dataid;
+  return r;
+}
+
+int findWordByString(struct datrietree_s* datrie,
+		     const char* word, 
+		     unsigned int *dataid, 
+		     enum word_encode encode, 
+		     int debug)
+{
+  int r;
+  
+  assert(datrie != NULL);
+  assert(word != NULL);
+
+  r = dat_find_string(datrie->datrie, encode, word, dataid);
+
+  if (*dataid > 0)
+    *dataid = *dataid - 1;
   return r;
 }
 
