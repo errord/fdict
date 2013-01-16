@@ -23,7 +23,7 @@ bool dat_index_data_init(struct index_s *index)
 
   if (fdict->debug) {
     time = timeend(&tinfo);
-    printf("Load Datrie Bindict Time: %d msec\n", time);
+    printf("Load Datrie Index Bindict Time: %d msec\n", time);
   }
 
   if (!datrie)

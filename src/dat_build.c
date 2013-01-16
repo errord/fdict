@@ -52,6 +52,7 @@ bool dat_build_start(struct index_s *index)
     dump_datrie(datrie, build->data_file);
   printf("Write Datrie Index File: %s\n", index->datrie_index_file_name);
   savedatrie_bindict(datrie, index->datrie_index_file_name);
+  fclose(fd);
   return true;
 }
 

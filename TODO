@@ -8,6 +8,7 @@
 2013-1-14
 [v] utf16为什么比utf8的索引文件小？utf8生成的wordimage非常大
 [v] 查询时一个字一个字查,性能没有明显提升
+[v] fdsearch支持从文件中读取keyword
 
 2013-1-6
 建立大数据时，构造trie tree非常消耗内存,所以需要支持基于磁盘的trie tree构造

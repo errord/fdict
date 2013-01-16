@@ -287,11 +287,11 @@ int dat_find_string(struct datrie_s *datrie, enum word_encode encode, const char
       p = utf8char(p, &word);
       if (!p)
 	break;
-    }
+    } else
+      assert(0); /* gbk */
 
     getwordcode(c, wordimage, word);
     t = ABS(array[s].base) + c;
-
     if (array[t].check != s)
       return 0;
     s = t;

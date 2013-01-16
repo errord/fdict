@@ -25,7 +25,7 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   datrie = (struct datrietree_s*)index->index_data;
 
   if (!datrie) {
-    printf("Load Index Failed: %s\n", index->datrie_index_file_name);
+    printf("Load Datrie Index Failed: %s\n", index->datrie_index_file_name);
     return NULL;
   }
 
@@ -36,7 +36,7 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
 
   if (fdict->debug) {
     time = timeend_usec(&tinfo);
-    printf("Search Time: %d usec\n", time);
+    printf("Datrie Index Search Time: %d usec\n", time);
   }
 
   if (r != 2) {
