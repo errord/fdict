@@ -17,6 +17,7 @@ bool dat_build_start(struct index_s *index)
   struct record_s *record;
   data_parse_fn data_parse;
   FILE *fd;
+  int record_count = 0;
   
   fd = fopen(build->data_file, "r");
   if (!fd) {
@@ -39,10 +40,13 @@ bool dat_build_start(struct index_s *index)
       printf("Data Failed: %s\n", buf);
       continue;
     }
-
+    if (fdict->debug && (record_count % 100000) == 0) {
+      printf("Parse Record: %d\n", record_count);
+    }
     addWord(datrie, record_key(record), record->record_id, encode);
     record_write(fdict, record);
     record_init(fdict, record);
+    record_count++;
   }
   record_free(record);
   if (fdict->debug)
