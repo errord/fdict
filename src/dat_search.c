@@ -32,7 +32,7 @@ struct search_result_s* dat_search_start(struct index_s *index, const char *keyw
   if (fdict->debug)
     timestart(&tinfo);
 
-  r = findWordByString(datrie, keyword, &dataid, encode, fdict->debug);
+  findWordByString(r, datrie, keyword, &dataid, encode, fdict->debug);
 
   if (fdict->debug) {
     time = timeend_usec(&tinfo);

@@ -153,24 +153,6 @@ int findWord(struct datrietree_s* datrie, const char* word, unsigned int *dataid
   return r;
 }
 
-int findWordByString(struct datrietree_s* datrie,
-		     const char* word, 
-		     unsigned int *dataid, 
-		     enum word_encode encode, 
-		     int debug)
-{
-  int r;
-  
-  assert(datrie != NULL);
-  assert(word != NULL);
-
-  r = dat_find_string(datrie->datrie, encode, word, dataid);
-
-  if (*dataid > 0)
-    *dataid = *dataid - 1;
-  return r;
-}
-
 void dump_datrie(struct datrietree_s* datrie, const char *datafile)
 {
   char trie_dump_file[MAX_PATH];

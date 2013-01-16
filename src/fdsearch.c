@@ -37,19 +37,22 @@ void search_by_keyword(struct fdict_s *fdict, const char *keyword, int index)
   int _int;
   double _number;
   time_info tinfo;
-  int time;
+  int search_time, result_time;
+
+  printf("T-- [%d] -------------------------------T\n", index);
 
   timestart(&tinfo);
   search_result = fdict_search(fdict, keyword);
-  time = timeend_usec(&tinfo);
+  search_time = timeend_usec(&tinfo);
 
+  timestart(&tinfo);
   if (!search_result) {
     printf("Not found: [%s]", keyword);
   } else {
     record = search_result_get_record(search_result);
     field_number = fdict_field_number(fdict);
     r_id = record_id(record);
-    printf("%d. [keyword:%s] -> \n\t[id:%d]", index, keyword, r_id);
+    printf("[keyword:%s] -> \n\t[id:%d]", keyword, r_id);
     for (i = 0; i < field_number; i++) {
       type = fdict_field_type(fdict, i);
       field = record_get_field(fdict, record, i);
@@ -74,7 +77,8 @@ void search_by_keyword(struct fdict_s *fdict, const char *keyword, int index)
     }
     search_result_free(search_result);
   }
-  printf("\n\tUse Time: %d usec\n", time);
+  result_time = timeend_usec(&tinfo);
+  printf("\nSearch Time: %d usec  Result Time: %d usec\n", search_time, result_time);
 }
 
 int search_by_file(struct fdict_s *fdict, const char *kfile)

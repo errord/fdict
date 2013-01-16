@@ -264,18 +264,19 @@ int dat_find_state(struct datrie_s* datrie, struct stateslot_s* stateslot, int s
 
 int dat_find_string(struct datrie_s *datrie, enum word_encode encode, const char *string, unsigned int *dataid)
 {
-  int c, s, t = 0;
+  register int c;
+  register int s = 1;
+  register int t = 0;
+  register struct wordimage_s *wordimage = datrie->wordimage;
+  register struct array_s *array = datrie->array;
   int m = 0;
   int word;
   const char *p = string;
-  struct wordimage_s *wordimage = datrie->wordimage;
-  struct array_s *array = datrie->array;
 
   if (datrie == NULL)
     return 0;
 
   *dataid = 0;
-  s = 1;
 
   for(;;) {
     if (encode == utf8_short) {
